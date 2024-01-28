@@ -10,6 +10,8 @@ from scipy.stats import uniform
 from sklearn.cluster import KMeans
 
 import matplotlib.pyplot as plt
+from kmeans_scratch import run_Kmeans
+
 
 def geometric(size):
     p = 0.65
@@ -59,7 +61,7 @@ def get_distribution(distr,size):
             return "invalid value"
 
 
-def model(X,y):
+def default_model(X,y):
     kmeans = KMeans(n_clusters=4, random_state=0, n_init="auto").fit(X)
     pred_classes = kmeans.predict(X) #kmeans.labels_
     centers = kmeans.cluster_centers_
@@ -69,17 +71,19 @@ def model(X,y):
 
 def build_dataset():
     
-    rows = [500,1000,1500,2000,3000,3500]
-    cols = [500,1000,1500,2000,2500,3000,3500,4000]
+    rows = [500,1000,1500,2000]#,3000,3500]
+    cols = [500,1000,1500,2000]#,2500,3000,3500,4000]
     all_accuracy = []
-
+    
+    K = 4
     for row_size in rows:
         for col_size in cols:
             size = (row_size, col_size) #size = (100,5)
             distributions = {"exponential":1,"geometric":2,"weibull":3,"hypergeometric":4}  # uniform
             X = np.concatenate([get_distribution(dist,size).reshape(size[0],-1) for dist,_ in distributions.items()])
             y = np.concatenate([[classes]*size[0] for _,classes in distributions.items()]) 
-            accuracy = model(X,y)
+            #accuracy = default_model(X,y)
+            accuracy = run_Kmeans(K, X, y)
             all_accuracy.append(accuracy)
     
     return all_accuracy
